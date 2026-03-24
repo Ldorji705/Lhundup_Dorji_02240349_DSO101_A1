@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path";
 import pkg from "pg";
 
 const { Pool } = pkg;
@@ -18,6 +19,8 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   port: process.env.DB_PORT || 5432,
 });
+
+// ---------- API ROUTES ----------
 
 // GET /tasks
 app.get("/tasks", async (req, res) => {
@@ -73,6 +76,19 @@ app.delete("/tasks/:id", async (req, res) => {
   }
 });
 
-app.listen(process.env.PORT || 5001, () => {
-  console.log(`Server running on port ${process.env.PORT || 5001}`);
+// ---------- SERVE FRONTEND IN PRODUCTION ----------
+if (process.env.NODE_ENV === "production") {
+  const __dirname = path.resolve(); // required for ES modules
+  app.use(express.static(path.join(__dirname, "../frontend/build")));
+
+  // Send all other routes to React's index.html
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+  });
+}
+
+// ---------- START SERVER ----------
+const PORT = process.env.PORT || 5001;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

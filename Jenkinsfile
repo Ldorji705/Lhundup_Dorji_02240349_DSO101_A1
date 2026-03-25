@@ -14,27 +14,44 @@ pipeline {
             }
         }
 
-        stage('Install') {
+        // 🔹 Backend
+        stage('Install Backend') {
             steps {
-                sh 'npm install'
+                dir('Backend') {
+                    sh 'npm install'
+                }
             }
         }
 
-        stage('Build') {
+        stage('Test Backend') {
             steps {
-                sh 'npm run build'
+                dir('Backend') {
+                    sh 'npm test'
+                }
             }
         }
 
-        stage('Test') {
+        // 🔹 Frontend
+        stage('Install Frontend') {
             steps {
-                sh 'npm test'
+                dir('frontend') {
+                    sh 'npm install'
+                }
             }
         }
 
+        stage('Build Frontend') {
+            steps {
+                dir('frontend') {
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        // 🔹 Deploy (basic)
         stage('Deploy') {
             steps {
-                echo "Deploy step"
+                echo "Deploy step (you can add Docker later)"
             }
         }
     }

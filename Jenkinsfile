@@ -1,58 +1,62 @@
 pipeline {
     agent any
-
     tools {
         nodejs 'NodeJS'
     }
-
     stages {
 
         stage('Checkout') {
             steps {
-                git branch: 'main', 
-                url: 'https://github.com/Ldorji705/Lhundup_Dorji_02240349_DSO101_A1.git'
+                git branch: 'main',
+                    credentialsId: 'kinley',
+                    url: 'https://github.com/Ldorji705/Lhundup_Dorji_02240349_DSO101_A1.git'
             }
         }
 
-        // 🔹 Backend
-        stage('Install Backend') {
+        stage('Install') {
             steps {
-                dir('Backend') {
-                    sh 'npm install'
+                dir('backend') {
+                    bat 'npm install'
                 }
             }
         }
 
-        stage('Test Backend') {
+        stage('Build') {
             steps {
-                dir('Backend') {
-                    sh 'npm test'
+                dir('backend') {
+                    bat 'npm run build'
                 }
             }
         }
 
-        // 🔹 Frontend
-        stage('Install Frontend') {
+        stage('Test') {
             steps {
-                dir('frontend') {
-                    sh 'npm install'
+                dir('backend') {
+                    bat 'npm test'
+                }
+            }
+            post {
+                always {
+                    junit 'backend/junit.xml'
                 }
             }
         }
 
-        stage('Build Frontend') {
-            steps {
-                dir('frontend') {
-                    sh 'npm run build'
-                }
-            }
-        }
-
-        // 🔹 Deploy (basic)
         stage('Deploy') {
             steps {
-                echo "Deploy step (you can add Docker later)"
+                echo 'App is deployed on Render.com via GitHub auto-deploy'
+                echo 'Backend: https://be-todo-02240349.onrender.com'
+                echo 'Frontend: https://fe-todo-02240349.onrender.com'
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Check the logs above.'
         }
     }
 }

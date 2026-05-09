@@ -1,1 +1,0 @@
-# Lhundup_Dorji_02240349_DSO101_A1

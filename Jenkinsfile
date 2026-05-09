@@ -1,21 +1,20 @@
 pipeline {
     agent any
-
     tools {
-        nodejs 'to-do-list'
+        nodejs 'NodeJS'
     }
-
     stages {
 
+        // Stage 1: Checkout Code
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                credentialsId: 'github-creds',
-                url: 'https://github.com/Ldorji705/Lhundup_Dorji_02240349_DSO101_A1.git'
+                    url: 'https://github.com/Ldorji705/Lhundup_Dorji_02240349_DSO101_A1.git'
             }
         }
 
-        stage('Install Dependencies') {
+        // Stage 2: Install Backend Dependencies
+        stage('Install Backend') {
             steps {
                 dir('backend') {
                     sh 'npm install'
@@ -23,46 +22,49 @@ pipeline {
             }
         }
 
-        stage('Lint / Health Check') {
+        // Stage 3: Install Frontend Dependencies
+        stage('Install Frontend') {
             steps {
-                dir('backend') {
-                    sh 'node -v'
-                    sh 'npm -v'
-                    sh 'echo "Dependencies installed successfully"'
+                dir('frontend') {
+                    sh 'npm install'
                 }
             }
         }
 
-        stage('Test') {
+        // Stage 4: Build Frontend
+        stage('Build Frontend') {
             steps {
-                dir('backend') {
-                    sh 'echo "No tests configured yet - skipping"'
+                dir('frontend') {
+                    sh 'npm run build'
                 }
             }
         }
 
-        stage('Deploy (Simulation)') {
+        // Stage 5: Run Backend Tests
+        stage('Test Backend') {
             steps {
-                sh '''
-                    echo "Starting deployment..."
-                    echo "Backend is ready"
-                    echo "You can now run: npm start inside backend/"
-                '''
+                dir('backend') {
+                    sh 'npm test'
+                }
+            }
+            post {
+                always {
+                    junit '**/junit.xml'
+                }
             }
         }
-    }
 
-    post {
-        success {
-            echo ' Pipeline executed successfully!'
+        // Stage 6: Deploy - Build and Push Docker Images
+        stage('Deploy') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-creds') {
+                        docker.build('ldorji705/be-todo:02240349', './backend').push()
+                        docker.build('ldorji705/fe-todo:02240349', './frontend').push()
+                    }
+                }
+            }
         }
 
-        failure {
-            echo ' Pipeline failed. Check logs above.'
-        }
-
-        always {
-            echo ' Pipeline finished.'
-        }
     }
 }

@@ -1,6 +1,6 @@
-// API client that talks to the backend server on port 5001
+// API client that talks to the backend server
 
-const API_URL = "http://localhost:5001"; // backend base URL
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 export async function fetchTasks() {
   const res = await fetch(`${API_URL}/tasks`);
@@ -37,7 +37,6 @@ export async function deleteTask(id) {
   });
   if (!res.ok) throw new Error("Failed to delete task");
 
-  // backend may or may not send JSON on delete
   let data = null;
   try {
     data = await res.json();

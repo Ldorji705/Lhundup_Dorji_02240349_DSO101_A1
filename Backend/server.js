@@ -9,7 +9,13 @@ const { Pool } = pkg;
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+app.use(cors({
+  origin: 'https://fe-todo-02240349.onrender.com',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
+
 app.use(express.json());
 
 const pool = new Pool({
@@ -78,12 +84,10 @@ app.delete("/tasks/:id", async (req, res) => {
 
 // ---------- SERVE FRONTEND IN PRODUCTION ----------
 if (process.env.NODE_ENV === "production") {
-  const __dirname = path.resolve(); // required for ES modules
-  app.use(express.static(path.join(__dirname, "../frontend/build")));
-
-  // Send all other routes to React's index.html
+  const __dirname = path.resolve();
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+    res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
   });
 }
 

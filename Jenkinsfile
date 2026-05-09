@@ -54,15 +54,11 @@ pipeline {
             }
         }
 
-        // Stage 6: Deploy - Build and Push Docker Images
+        // Stage 6: Deploy - Trigger Render Deployments
         stage('Deploy') {
             steps {
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-creds') {
-                        docker.build('ldorji705/be-todo:02240349', './backend').push()
-                        docker.build('ldorji705/fe-todo:02240349', './frontend').push()
-                    }
-                }
+                sh 'curl -X POST https://api.render.com/deploy/srv-d7vj411o3t8c73d0c960?key=3RBx2vWgbdE'
+                sh 'curl -X POST https://api.render.com/deploy/srv-d7vjcij7uimc73eqq3ag?key=l03fYfCpbUU'
             }
         }
 

@@ -60,6 +60,8 @@ I created a `render.yaml` file in the repository root to define both services as
 ---
 ### Frontend Deployed From Render.
 ![alt text](<images /Screenshot 2026-05-10 at 12.21.32 AM.png>)
+### Backend Deployed From Render.
+![alt text](<images /Screenshot 2026-05-11 at 1.09.05 AM.png>)
 ### DockerHub
 ![alt text](<images /Screenshot 2026-05-10 at 12.22.29 AM.png>)
 ### Render Web services
